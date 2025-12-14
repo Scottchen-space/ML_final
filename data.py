@@ -8,9 +8,10 @@ df = pd.read_csv('train.csv')
 df.head()
 df.info()
 
-df["Extrovert"] = df["Personality"].apply(lambda x: 1 if x == 'Extrovert' else 0)
+
 df["Fear_stage"] = df["Stage_fear"].map({"Yes": 1, "No": 0})
 df["Social_drain"] = df["Drained_after_socializing"].map({"Yes": 1, "No": 0})
+df["Extrovert"] = df["Personality"].apply(lambda x: 1 if x == 'Extrovert' else 0)
 df = df.drop(columns=["Personality","Stage_fear","Drained_after_socializing"])
 
 # 資料外向人較多 基本上特徵分布都算廣(沒有哪個特徵特別集中)
@@ -61,6 +62,12 @@ mode_imputer = SimpleImputer(strategy='most_frequent')
 df[cat_features] = mode_imputer.fit_transform(df[cat_features])
 
 
+plt.figure(figsize=(8, 6))
+sns.countplot(data=df, x='Social_drain', hue='Extrovert')
+plt.show()
+plt.figure(figsize=(8, 6))
+sns.countplot(data=df, x='Fear_stage', hue='Extrovert')
+plt.show() 
 # 檢查二元特徵填補後比例
 plt.figure(figsize=(10, 4))
 # 畫第一個特徵：Social_drain
@@ -78,7 +85,7 @@ print("Social_drain 比例:\n", df['Social_drain'].value_counts(normalize=True))
 print("-" * 20)
 print("Fear_stage 比例:\n", df['Fear_stage'].value_counts(normalize=True))
 
-# social drain, fear stage 超過75%的特徵值刪除
+# social drain, fear stage 刪除後結果較好 可能原因?
 df = df.drop(columns=["Social_drain", "Fear_stage"])
 
 df.corr()
